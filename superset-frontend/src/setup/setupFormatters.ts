@@ -24,6 +24,7 @@ import {
   getTimeFormatterRegistry,
   smartDateFormatter,
   smartDateVerboseFormatter,
+  createD3NumberFormatter
 } from '@superset-ui/core';
 import { FormatLocaleDefinition } from 'd3-format';
 
@@ -67,6 +68,7 @@ export default function setupFormatters(
     .registerValue('$,0f', getNumberFormatter('$,.4f'))
     .registerValue('$,.f', getNumberFormatter('$,.4f'))
     .registerValue('DURATION', createDurationFormatter())
+    .registerValue('bytes-iec-adaptive',createD3NumberFormatter({  formatString: 'bytes-iec-adaptive', }),)
     .registerValue(
       'DURATION_SUB',
       createDurationFormatter({ formatSubMilliseconds: true }),

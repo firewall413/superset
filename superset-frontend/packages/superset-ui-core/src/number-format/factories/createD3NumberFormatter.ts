@@ -25,6 +25,38 @@ import { isRequired } from '../../utils';
 import NumberFormatter from '../NumberFormatter';
 import { NumberFormatFunction } from '../types';
 
+
+function formatBytesAdaptive(value: number): string {
+  let formattedValue: number;
+  let unit: string;
+
+  if (value >= 2 ** 60) {
+    formattedValue = value / (2 ** 60);
+    unit = 'EiB';
+  } else if (value >= 2 ** 50) {
+    formattedValue = value / (2 ** 50);
+    unit = 'PiB';
+  } else if (value >= 2 ** 40) {
+    formattedValue = value / (2 ** 40);
+    unit = 'TiB';
+  } else if (value >= 2 ** 30) {
+    formattedValue = value / (2 ** 30);
+    unit = 'GiB';
+  } else if (value >= 2 ** 20) {
+    formattedValue = value / (2 ** 20);
+    unit = 'MiB';
+  } else if (value >= 2 ** 10) {
+    formattedValue = value / (2 ** 10);
+    unit = 'KiB';
+  } else {
+    formattedValue = value;
+    unit = 'B';
+  }
+
+  return `${d3Format('.3s')(formattedValue)} ${unit}`;
+}
+
+
 export default function createD3NumberFormatter(config: {
   description?: string;
   formatString: string;
@@ -42,10 +74,14 @@ export default function createD3NumberFormatter(config: {
   let isInvalid = false;
 
   try {
-    formatFunc =
-      typeof locale === 'undefined'
-        ? d3Format(formatString)
-        : formatLocale(locale).format(formatString);
+    if (formatString === 'bytes-iec-adaptive') {
+      formatFunc = formatBytesAdaptive;
+    } else {
+      formatFunc =
+        typeof locale === 'undefined'
+          ? d3Format(formatString)
+          : formatLocale(locale).format(formatString);
+    }
   } catch (error) {
     formatFunc = value => `${value} (Invalid format: ${formatString})`;
     isInvalid = true;
